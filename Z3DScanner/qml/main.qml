@@ -9,6 +9,7 @@ import QtQuick.Layouts 1.3
 import QtQuick.Scene3D 2.0
 
 import Z3D.PointCloud 1.0
+import "settings"
 
 ApplicationWindow {
     id: window
@@ -144,25 +145,26 @@ ApplicationWindow {
                 Item {
                     ColumnLayout {
                         anchors.fill: parent
-                        anchors.margins: 16
 
-                        Button {
+                        ItemDelegate {
                             Layout.fillWidth: true
                             font.pointSize: 14
                             text: qsTr("Pattern settings")
-                            //! FIXME use model for settings so we can display them in a generic/unified way
-                            onClicked: scanner.openPatternsDialog()
+                            onClicked: {
+                                stackView.push(patternProjectionSettings);
+                            }
                         }
 
-                        Button {
+                        ItemDelegate {
                             Layout.fillWidth: true
                             font.pointSize: 14
                             text: qsTr("Reconstruction settings")
-                            //! FIXME use model for settings so we can display them in a generic/unified way
-                            onClicked: scanner.openStructuredLightSystemDialog()
+                            onClicked: {
+                                stackView.push(structuredLightSystemSettings);
+                            }
                         }
 
-                        Button {
+                        ItemDelegate {
                             Layout.fillWidth: true
                             font.pointSize: 14
                             text: qsTr("3D viewer settings")
@@ -171,6 +173,110 @@ ApplicationWindow {
 
                         Item {
                             Layout.fillHeight: true
+                        }
+                    }
+                }
+            }
+
+            Component {
+                id: patternProjectionSettings
+
+                Item {
+                    ColumnLayout {
+                        anchors.fill: parent
+
+                        RowLayout {
+                            Button {
+                                Layout.maximumWidth: height
+                                text: "<"
+                                onClicked: stackView.pop()
+                            }
+
+                            Text {
+                                Layout.fillWidth: true
+                                font.bold: true
+                                text: qsTr("Pattern projetion settings")
+                            }
+                        }
+
+                        ListView {
+                            id: patternProjectionSettingsListView
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                            clip: true
+
+                            model: scanner.patternProjectionSettings
+
+                            section.property: "path"
+                            section.delegate: Pane {
+                                width: patternProjectionSettingsListView.width
+                                height: sectionLabel.implicitHeight + 20
+
+                                Label {
+                                    id: sectionLabel
+                                    text: section
+                                    anchors.centerIn: parent
+                                }
+                            }
+
+                            delegate: ZSettingsItemDelegate {
+                                width: patternProjectionSettingsListView.width
+                                setting: qtObject
+                            }
+
+                            ScrollIndicator.vertical: ScrollIndicator { }
+                        }
+                    }
+                }
+            }
+
+            Component {
+                id: structuredLightSystemSettings
+
+                Item {
+                    ColumnLayout {
+                        anchors.fill: parent
+
+                        RowLayout {
+                            Button {
+                                Layout.maximumWidth: height
+                                text: "<"
+                                onClicked: stackView.pop()
+                            }
+
+                            Text {
+                                Layout.fillWidth: true
+                                font.bold: true
+                                text: qsTr("Structured light system settings")
+                            }
+                        }
+
+                        ListView {
+                            id: structuredLightSystemSettingsListView
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                            clip: true
+
+                            model: scanner.structuredLightSystemSettings
+
+                            section.property: "path"
+                            section.delegate: Pane {
+                                width: structuredLightSystemSettingsListView.width
+                                height: sectionLabel.implicitHeight + 20
+
+                                Label {
+                                    id: sectionLabel
+                                    text: section
+                                    anchors.centerIn: parent
+                                }
+                            }
+
+                            delegate: ZSettingsItemDelegate {
+                                width: structuredLightSystemSettingsListView.width
+                                setting: qtObject
+                            }
+
+                            ScrollIndicator.vertical: ScrollIndicator { }
                         }
                     }
                 }
@@ -193,7 +299,6 @@ ApplicationWindow {
 
                             Text {
                                 Layout.fillWidth: true
-                                font.pointSize: 14
                                 font.bold: true
                                 text: qsTr("3D viewer settings")
                             }
